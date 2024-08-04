@@ -18,8 +18,7 @@ public class ImageController {
 
     @PostMapping("/upload")
     public ResponseEntity<?> uploadImage(@RequestParam("image")MultipartFile file) throws IOException{
-        String uploadImage = imageService.uploadImage(file);
-        return ResponseEntity.status(HttpStatus.OK).body(uploadImage);
+        return imageService.uploadImage(file);
     }
 
     @GetMapping("/retrieve/{fileId}")
