@@ -8,9 +8,9 @@ import com.fiseq.image_service.repository.ImageRepository;
 import com.fiseq.image_service.util.ImageUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ContextedRuntimeException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,7 +25,7 @@ public class ImageService {
     private final ImageRepository imageRepository;
 
     public ResponseEntity<?> uploadImage(MultipartFile imageFile) throws IOException {
-        if (imageFile != null)
+        if (imageFile.isEmpty())
             throw new NoSuchImageExistException("The image you tried to upload was not found.");
         try {
             var imageToSave = Image.builder()
@@ -40,17 +40,20 @@ public class ImageService {
         }
     }
 
-    @Transactional()
-    public byte[] downloadImage(Long fileId) {
+    @Transactional
+    public ResponseEntity<?> downloadImage(Long fileId) {
         Optional<Image> dbImage = imageRepository.findById(fileId);
         return dbImage.map(image -> {
             try {
-                return ImageUtils.decompressImage(image.getImageData());
+                byte[] imageData = ImageUtils.decompressImage(image.getImageData());
+                return ResponseEntity.status(HttpStatus.OK)
+                        .contentType(MediaType.valueOf(MediaType.IMAGE_PNG_VALUE))
+                        .body(imageData);
             } catch (DataFormatException | IOException exception) {
                 throw new ContextedRuntimeException("Error downloading an image", exception)
                         .addContextValue("Image ID", image.getId())
                         .addContextValue("Image name", image.getName());
             }
-        }).orElse(null);
+        }).orElseThrow(()-> new NoSuchImageExistException("Could not access a file with the id you are looking for."));
     }
 }
