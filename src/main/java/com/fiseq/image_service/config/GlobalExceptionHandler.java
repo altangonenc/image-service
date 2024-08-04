@@ -18,8 +18,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(value = ContextedRuntimeException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
     public @ResponseBody ErrorResponse handleException(ContextedRuntimeException ex) {
-        return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage()+ex.getContextEntries());
+        return new ErrorResponse(HttpStatus.UNSUPPORTED_MEDIA_TYPE.value(), ex.getMessage()+ex.getContextEntries());
     }
 }

@@ -53,6 +53,8 @@ public class ImageService {
                 throw new ContextedRuntimeException("Error downloading an image", exception)
                         .addContextValue("Image ID", image.getId())
                         .addContextValue("Image name", image.getName());
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ImageResponseDto(Status.FAILURE, e.getMessage()));
             }
         }).orElseThrow(()-> new NoSuchImageExistException("Could not access a file with the id you are looking for."));
     }
