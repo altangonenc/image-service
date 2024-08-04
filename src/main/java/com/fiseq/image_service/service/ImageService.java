@@ -25,19 +25,19 @@ public class ImageService {
                 .imageData(ImageUtils.compressImage(imageFile.getBytes()))
                 .build();
         imageRepository.save(imageToSave);
-        return STR."file upload successfully \{imageFile.getOriginalFilename()}";
+        return STR."file upload successfully \{imageFile.getOriginalFilename()}, file Id: \{imageToSave.getId()}, you can search by this id.";
     }
 
     @Transactional()
-    public byte[] downloadImage(String imageName) {
-        Optional<Image> dbImage = imageRepository.findByName(imageName);
+    public byte[] downloadImage(Long fileId) {
+        Optional<Image> dbImage = imageRepository.findById(fileId);
         return dbImage.map(image -> {
             try {
                 return ImageUtils.decompressImage(image.getImageData());
             } catch (DataFormatException | IOException exception) {
                 throw new ContextedRuntimeException("Error downloading an image", exception)
                         .addContextValue("Image ID",  image.getId())
-                        .addContextValue("Image name", imageName);
+                        .addContextValue("Image name", image.getName());
             }
         }).orElse(null);
     }

@@ -11,20 +11,20 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/image")
+@RequestMapping("api/v1/image")
 @RequiredArgsConstructor
 public class ImageController {
     private final ImageService imageService;
 
-    @PostMapping
+    @PostMapping("/upload")
     public ResponseEntity<?> uploadImage(@RequestParam("image")MultipartFile file) throws IOException{
         String uploadImage = imageService.uploadImage(file);
         return ResponseEntity.status(HttpStatus.OK).body(uploadImage);
     }
 
-    @GetMapping("/{fileName}")
-    public ResponseEntity<?> downloadImage(@PathVariable String fileName) {
-        byte[] imageData = imageService.downloadImage(fileName);
+    @GetMapping("/retrieve/{fileId}")
+    public ResponseEntity<?> downloadImage(@PathVariable Long fileId) {
+        byte[] imageData = imageService.downloadImage(fileId);
         return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.valueOf(MediaType.IMAGE_PNG_VALUE))
                 .body(imageData);
