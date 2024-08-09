@@ -1,7 +1,6 @@
-package com.fiseq.image_service.config;
+package com.fiseq.image_service.exception;
 
 import com.fiseq.image_service.dto.ErrorResponse;
-import com.fiseq.image_service.exception.NoSuchImageExistException;
 import org.apache.commons.lang3.exception.ContextedRuntimeException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
